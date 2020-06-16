@@ -1,0 +1,63 @@
+#!/usr/bin/env python
+# coding: utf-8
+
+#import library
+import pandas as pd
+import networkx as nx
+import matplotlib.pyplot as plt
+
+
+#Sample Dataset
+BasicInfo={
+    "Name":['Munna','Robiul','Sayem'],
+    "Age":['27','32','24'],
+    "Study":['MSc','MSc',"BSc"],
+    "Home_Country":['Bangladesh','Bangladesh','Bangladesh'],
+}
+
+
+data=pd.DataFrame(BasicInfo, columns=['Name','Age','Study','Home_Country'])
+
+
+# ### Making Triples
+
+# In[46]:
+
+
+triples=[]
+for _,row in data.iterrows():
+    name= (row['Name'], "AgeOf", row['Age'])
+    study= (row['Name'], "StudyIn", row['Study'])
+    country= (row['Name'], "HomeCountry", row['Home_Country'])
+    
+    triples.extend((name,study,country))
+
+
+
+triples_data=pd.DataFrame(triples, columns=["Subject", "Predicate", "Object"])
+
+
+# In[114]:
+
+
+def graph(name):
+    G1=nx.from_pandas_edgelist(triples_data[triples_data['Subject']== name],"Object","Subject", 
+                              create_using=nx.DiGraph(),edge_attr=True)
+
+    
+    plt.figure(figsize=(6,6))
+    pos = nx.spectral_layout(G1)
+    nx.draw(G1, with_labels=True, edge_attr= triples_data['Predicate'], node_color='skyblue', node_size=800, 
+            edge_cmap=plt.cm.Blues, pos = pos)
+    plt.show()
+
+
+# In[115]:
+
+
+graph("Munna")
+
+
+
+
+
